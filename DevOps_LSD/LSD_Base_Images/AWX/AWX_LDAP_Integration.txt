@@ -1,0 +1,99 @@
+
+
+
+AWX LDAP Integration
+
+# LDAP SERVER
+===========
+Default
+===========
+
+# LDAP SERVER URI
+===========
+ldap://dc1-bld-bj3v.blts.za.local:389
+===========
+
+# LDAP BIND DN
+===========
+CN=svck8sadprod,OU=Managed Service Accounts OU,DC=blts,DC=za,DC=local
+===========
+
+# LDAP GROUP TYPE
+===========
+GroupOfNameType
+===========
+
+# LDAP USER SEARCH
+===========
+[
+ "DC=blts,DC=za,DC=local",
+ "SCOPE_SUBTREE",
+ "(sAMAccountName=%(user)s)"
+]
+===========
+
+# LDAP GROUP SEARCH
+===========
+[
+ "DC=blts,DC=za,DC=local",
+ "SCOPE_SUBTREE",
+ "(objectClass=groupOfNames)"
+]
+===========
+
+
+# LDAP USER ATTRIBUTE MAP
+===========
+{
+ "first_name": "givenName",
+ "last_name": "sn",
+ "email": "mail"
+}
+===========
+
+# LDAP USER FLAGS BY GROUP
+===========
+{
+ "is_superuser": [
+  "CN=Dev Elevated Ghub Access,OU=BLD,OU=Firewall AD Access Groups,OU=Security Groups,OU=Groups,DC=blts,DC=za,DC=local"
+ ]
+}
+===========
+
+# LDAP ORGANIZATION MAP
+===========
+{
+ "LSD": {
+  "remove_users": false,
+  "remove_admins": false,
+  "admins": "CN=LSD Support Users,OU=Security Groups,OU=Groups,DC=blts,DC=za,DC=local"
+ }
+}
+===========
+
+# LDAP TEAM MAP
+===========
+{
+ "Production": {
+  "users": "CN=Techops,OU=Security Groups,OU=Groups,DC=blts,DC=za,DC=local",
+  "remove": true,
+  "organization": "techops"
+ },
+ "QA": {
+  "users": "CN=BLD QA Tester Access,OU=Security Groups,OU=Groups,DC=blts,DC=za,DC=local",
+  "remove": true,
+  "organization": "bld-qa"
+ },
+ "Development": {
+  "users": "CN=BLD Development 802.1x Network Access,OU=802.1x Access,OU=Security Groups,OU=Groups,DC=blts,DC=za,DC=local",
+  "remove": false,
+  "organization": "bld-development"
+ },
+ "Ticketpro Dev / QA": {
+  "users": "CN=TicketPro Developers,OU=_Security Groups,OU=BLTS,DC=blts,DC=za,DC=local",
+  "remove": false,
+  "organization": "ticketpro-dev"
+ }
+}
+===========
+

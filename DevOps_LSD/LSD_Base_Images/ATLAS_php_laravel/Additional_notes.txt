@@ -1,0 +1,143 @@
+
+==================================================================
+[root@KWEB1-BLD-BJ5V compose]# cat docker-compose.yml 
+version: '3'
+services:
+  www:
+    image: registry.apps.k8s-01.prod.bluelabel.co.za/digital/atlas/atlas_web:1.0.543
+    container_name: 1.0.543_atlas_web
+    user: root
+    ports:
+      - "443:443"
+    volumes:
+      - /opt/application/atlas/master/env/.env:/var/www/laravel/.env
+      - /opt/application/atlas/master/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /opt/application/atlas/master/nginx/conf.d:/etc/nginx/conf.d
+      - /opt/application/atlas/master/pki:/etc/pki/tls/private
+      - /data/storage:/var/www/laravel/storage
+    restart: always
+    environment:
+      http_proxy: http://172.25.70.30:3128
+      https_proxy: http://172.25.70.30:3128
+      no_proxy: 127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+      # LD_PRELOAD: /opt/dynatrace-7.0/agent/lib64/libdtagent.so
+[root@KWEB1-BLD-BJ5V compose]#
+==================================================================
+
+
+
+==================================================================
+[root@KWEB1-BLD-BJ5V compose]# cat ../nginx/nginx.conf 
+daemon off;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+include /usr/share/nginx/modules/*.conf;
+pid /var/atlas/run/nginx/nginx.pid;
+events {
+    worker_connections 1024;
+}
+
+http {
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile              on;
+    tcp_nopush            on;
+    tcp_nodelay           on;
+    client_max_body_size 40M;
+    keepalive_timeout     65;
+    types_hash_max_size 2048;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+
+    include /etc/nginx/conf.d/*.conf;
+
+}
+[root@KWEB1-BLD-BJ5V compose]#
+==================================================================
+
+
+==================================================================
+[root@KWEB1-BLD-BJ5V compose]# cat ../nginx/conf.d/atlas.conf 
+server {
+    listen 80;
+    server_name portal.t3tsa.co.za t3tsa.portal.t3tsa.co.za 22agk1.portal.t3tsa.co.za 22che1.portal.t3tsa.co.za 22coz1.portal.t3tsa.co.za 22dou1.portal.t3tsa.co.za 22faei1.portal.t3tsa.co.za 22htc1.portal.t3tsa.co.za 22htm1.portal.t3tsa.co.za 22icom1.portal.t3tsa.co.za 22ira1.portal.t3tsa.co.za 22kma1.portal.t3tsa.co.za 22lvs1.portal.t3tsa.co.za 22mam1.portal.t3tsa.co.za 22mdt1.portal.t3tsa.co.za 22nbcc.portal.t3tsa.co.za 22new1.portal.t3tsa.co.za 22osc1.portal.t3tsa.co.za 22sav1.portal.t3tsa.co.za 22smn1.portal.t3tsa.co.za 22val1.portal.t3tsa.co.za 22zal1.portal.t3tsa.co.za 22zmg1.portal.t3tsa.co.za sam001.portal.t3tsa.co.za 200iw.portal.t3tsa.co.za e2a50.portal.t3tsa.co.za 5livv.portal.t3tsa.co.za 3w00u.portal.t3tsa.co.za ldjmd.portal.t3tsa.co.za kvaam.portal.t3tsa.co.za 6d4a2.portal.t3tsa.co.za fmxga.portal.t3tsa.co.za j0jve.portal.t3tsa.co.za ndvro.portal.t3tsa.co.za dkmfe.portal.t3tsa.co.za xrj61.portal.t3tsa.co.za pkg2e.portal.t3tsa.co.za 1j96o.portal.t3tsa.co.za l6w7m.portal.t3tsa.co.za sx6hg.portal.t3tsa.co.za s6x5x.portal.t3tsa.co.za o77ru.portal.t3tsa.co.za 7g6ti.portal.t3tsa.co.za xy0t1.portal.t3tsa.co.za 6vplr.portal.t3tsa.co.za a6byu.portal.t3tsa.co.za 42cbb.portal.t3tsa.co.za uwr0z.portal.t3tsa.co.za v0l7d.portal.t3tsa.co.za xc9m5.portal.t3tsa.co.za ksqbb.portal.t3tsa.co.za a1jxs.portal.t3tsa.co.za dhpxn.portal.t3tsa.co.za uv8ic.portal.t3tsa.co.za 7fegr.portal.t3tsa.co.za ibeb4.portal.t3tsa.co.za k0mhz.portal.t3tsa.co.za jge27.portal.t3tsa.co.za oofcj.portal.t3tsa.co.za i301p.portal.t3tsa.co.za eww5l.portal.t3tsa.co.za 1ou53.portal.t3tsa.co.za 4shkt.portal.t3tsa.co.za nqxfb.portal.t3tsa.co.za;
+    return 301 https://portal.t3tsa.co.za$request_uri;
+}
+
+server {
+    listen       443 ssl http2 default_server;
+    listen       [::]:443 ssl http2 default_server;
+    # symlink -> /dev/stdout
+    access_log /var/log/nginx/access.log;
+
+    # symlink -> /dev/stderr
+    error_log /var/log/nginx/error.log;
+
+    server_name  portal.t3tsa.co.za t3tsa.portal.t3tsa.co.za 22agk1.portal.t3tsa.co.za 22che1.portal.t3tsa.co.za 22coz1.portal.t3tsa.co.za 22dou1.portal.t3tsa.co.za 22faei1.portal.t3tsa.co.za 22htc1.portal.t3tsa.co.za 22htm1.portal.t3tsa.co.za 22icom1.portal.t3tsa.co.za 22ira1.portal.t3tsa.co.za 22kma1.portal.t3tsa.co.za 22lvs1.portal.t3tsa.co.za 22mam1.portal.t3tsa.co.za 22mdt1.portal.t3tsa.co.za 22nbcc.portal.t3tsa.co.za 22new1.portal.t3tsa.co.za 22osc1.portal.t3tsa.co.za 22sav1.portal.t3tsa.co.za 22smn1.portal.t3tsa.co.za 22val1.portal.t3tsa.co.za 22zal1.portal.t3tsa.co.za 22zmg1.portal.t3tsa.co.za sam001.portal.t3tsa.co.za 200iw.portal.t3tsa.co.za e2a50.portal.t3tsa.co.za 5livv.portal.t3tsa.co.za 3w00u.portal.t3tsa.co.za ldjmd.portal.t3tsa.co.za kvaam.portal.t3tsa.co.za 6d4a2.portal.t3tsa.co.za fmxga.portal.t3tsa.co.za j0jve.portal.t3tsa.co.za ndvro.portal.t3tsa.co.za dkmfe.portal.t3tsa.co.za xrj61.portal.t3tsa.co.za pkg2e.portal.t3tsa.co.za 1j96o.portal.t3tsa.co.za l6w7m.portal.t3tsa.co.za sx6hg.portal.t3tsa.co.za s6x5x.portal.t3tsa.co.za o77ru.portal.t3tsa.co.za 7g6ti.portal.t3tsa.co.za xy0t1.portal.t3tsa.co.za 6vplr.portal.t3tsa.co.za a6byu.portal.t3tsa.co.za 42cbb.portal.t3tsa.co.za uwr0z.portal.t3tsa.co.za v0l7d.portal.t3tsa.co.za xc9m5.portal.t3tsa.co.za ksqbb.portal.t3tsa.co.za a1jxs.portal.t3tsa.co.za dhpxn.portal.t3tsa.co.za uv8ic.portal.t3tsa.co.za 7fegr.portal.t3tsa.co.za ibeb4.portal.t3tsa.co.za k0mhz.portal.t3tsa.co.za jge27.portal.t3tsa.co.za oofcj.portal.t3tsa.co.za i301p.portal.t3tsa.co.za eww5l.portal.t3tsa.co.za 1ou53.portal.t3tsa.co.za 4shkt.portal.t3tsa.co.za nqxfb.portal.t3tsa.co.za;
+    root         /var/www/laravel/public/;
+    index index.php index.html index.htm;
+
+
+    ssl_certificate "/etc/pki/tls/private/atlas.crt";
+    ssl_certificate_key "/etc/pki/tls/private/atlas.key";
+    ssl_session_cache shared:SSL:1m;
+    ssl_session_timeout  10m;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+
+    include /etc/nginx/default.d/*.conf;
+
+    location / {
+            try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass unix:/var/atlas/run/php-fpm/php-fpm.sock;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            include fastcgi_params;
+    }
+
+    error_page 404 /404.html;
+        location = /40x.html {
+    }
+
+    error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+    }
+}
+[root@KWEB1-BLD-BJ5V compose]#
+==================================================================
+
+
+==================================================================
+[root@KWEB1-BLD-BJ5V etc]# cat ./systemd/system/multi-user.target.wants/atlas_web.service
+[Unit]
+Description=atlas
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStartPre=-/bin/docker-compose -f /opt/application/atlas/master/compose/docker-compose.yml down -v
+ExecStartPre=-/bin/docker login -u svc -p jLVeSFmaLHse7sr6zqi8 registry.apps.k8s-01.prod.bluelabel.co.za
+ExecStartPre=/bin/docker pull registry.apps.k8s-01.prod.bluelabel.co.za/digital/atlas/atlas_web:1.0.543
+ExecStart=/bin/docker-compose -f /opt/application/atlas/master/compose/docker-compose.yml up
+ExecStop=/bin/docker-compose -f /opt/application/atlas/master/compose/docker-compose.yml down -v
+[Install]
+WantedBy=multi-user.target 
+[root@KWEB1-BLD-BJ5V etc]#
+==================================================================
+
+
+
+
+
+
